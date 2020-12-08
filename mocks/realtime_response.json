@@ -1,0 +1,135 @@
+{
+  "lat": 52.321234567890,
+  "lon": 4.95124567890,
+  "temp": {
+    "value": 3.63,
+    "units": "C"
+  },
+  "feels_like": {
+    "value": 0.19,
+    "units": "C"
+  },
+  "dewpoint": {
+    "value": 2.56,
+    "units": "C"
+  },
+  "wind_speed": {
+    "value": 3.94,
+    "units": "m/s"
+  },
+  "wind_gust": {
+    "value": 8.75,
+    "units": "m/s"
+  },
+  "baro_pressure": {
+    "value": 1000.125,
+    "units": "hPa"
+  },
+  "visibility": {
+    "value": 10,
+    "units": "km"
+  },
+  "humidity": {
+    "value": 92.94,
+    "units": "%"
+  },
+  "wind_direction": {
+    "value": 188.5,
+    "units": "degrees"
+  },
+  "precipitation": {
+    "value": null,
+    "units": "mm/hr"
+  },
+  "precipitation_type": {
+    "value": null
+  },
+  "cloud_cover": {
+    "value": 72.19,
+    "units": "%"
+  },
+  "cloud_ceiling": {
+    "value": 125,
+    "units": "m"
+  },
+  "cloud_base": {
+    "value": 125,
+    "units": "m"
+  },
+  "surface_shortwave_radiation": {
+    "value": 0,
+    "units": "w/sqm"
+  },
+  "fire_index": {
+    "value": 3.6875
+  },
+  "sunrise": {
+    "value": "2020-12-07T07:36:14.526Z"
+  },
+  "sunset": {
+    "value": "2020-12-07T15:27:52.541Z"
+  },
+  "moon_phase": {
+    "value": "last_quarter"
+  },
+  "weather_code": {
+    "value": "mostly_cloudy"
+  },
+  "epa_aqi": {
+    "value": 88.9375
+  },
+  "epa_primary_pollutant": {
+    "value": "pm25"
+  },
+  "china_aqi": {
+    "value": 27.4375
+  },
+  "china_primary_pollutant": {
+    "value": "pm25"
+  },
+  "pm25": {
+    "value": 29.625,
+    "units": "µg/m3"
+  },
+  "pm10": {
+    "value": 32.9375,
+    "units": "µg/m3"
+  },
+  "o3": {
+    "value": 1.625,
+    "units": "ppb"
+  },
+  "no2": {
+    "value": 32.875,
+    "units": "ppb"
+  },
+  "co": {
+    "value": 0.9375,
+    "units": "ppm"
+  },
+  "so2": {
+    "value": 7.6875,
+    "units": "ppb"
+  },
+  "epa_health_concern": {
+    "value": "Moderate"
+  },
+  "china_health_concern": {
+    "value": "Good"
+  },
+  "pollen_tree": {
+    "value": 0,
+    "units": "Climacell Pollen Index"
+  },
+  "pollen_weed": {
+    "value": 0,
+    "units": "Climacell Pollen Index"
+  },
+  "pollen_grass": {
+    "value": 0,
+    "units": "Climacell Pollen Index"
+  },
+  "observation_time": {
+    "value": "2020-12-07T20:06:54.764Z"
+  }
+}
