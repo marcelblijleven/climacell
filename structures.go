@@ -16,11 +16,26 @@ type RealtimeData struct {
 	FireLayer
 }
 
+// NowcastData embeds the CoreLayer, AirQualityLayer, PollenLayer, RoadLayer and InsuranceLayer. It's the response type
+// for the Nowcast() API call
+type NowcastData struct {
+	ApiResponse
+	CoreLayer
+	AirQualityLayer
+	PollenLayer
+	RoadLayer
+	InsuranceLayer
+}
+
 // ApiResponse is the basic api response which contains only latitude, longitude and observation time
 type ApiResponse struct {
 	Latitude        float64  `json:"lat"`
 	Longitude       float64  `json:"lon"`
 	ObservationTime TimeData `json:"observation_time"`
+}
+
+type NowcastResponse struct {
+	Timesteps []NowcastData
 }
 
 // CoreLayer is the data layer of type Core, which is used in
