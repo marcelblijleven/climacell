@@ -3,7 +3,6 @@ package climacell
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
 var realtimeEndpoint = "/v3/weather/realtime"
@@ -22,26 +21,18 @@ func (c *Client) Realtime(latitude, longitude float64, unit unit, fields ...fiel
 		return nil, err
 	}
 
-	u, err := getURL(c.baseURL, realtimeEndpoint)
+	var parameters = map[string]interface{}{
+		"lat":         latitude,
+		"lon":         longitude,
+		"unit_system": unit,
+		"fields":      joinFields(fields, ","),
+	}
+
+	req, err := c.makeRequest(realtimeEndpoint, parameters)
 
 	if err != nil {
 		return nil, err
 	}
-
-	q := u.Query()
-	q.Set("lat", floatToString(latitude))
-	q.Set("lon", floatToString(longitude))
-	q.Set("unit_system", unit.String())
-	q.Set("fields", joinFields(fields, ","))
-	u.RawQuery = q.Encode()
-
-	req, err := http.NewRequest("GET", u.String(), nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("apikey", c.apiKey)
 
 	resp, err := c.httpClient.Do(req)
 
@@ -59,7 +50,7 @@ func (c *Client) Realtime(latitude, longitude float64, unit unit, fields ...fiel
 
 	defer resp.Body.Close()
 
-	if err := json.NewDecoder(resp.Body).Decode(&realtimeData); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&realtimeData); err != nil {
 		return nil, err
 	}
 

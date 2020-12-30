@@ -134,6 +134,7 @@ func TestClient_Realtime(t *testing.T) {
 
 	if err != nil {
 		t.Fatal("error setting up client")
+		return
 	}
 
 	latitude := 52.321234567890
