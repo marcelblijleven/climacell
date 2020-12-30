@@ -1,6 +1,8 @@
 package climacell
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -44,4 +46,51 @@ func NewClient(apiKey string, httpClient *http.Client) (*Client, error) {
 	client.httpClient = httpClient
 
 	return client, nil
+}
+
+func (c *Client) makeRequest(endpoint string, parameters map[string]interface{}) (*http.Request, error) {
+	u, err := getURL(c.baseURL, endpoint)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := u.Query()
+
+	for key, value := range parameters {
+		q.Set(key, fmt.Sprintf("%v", value))
+	}
+	u.RawQuery = q.Encode()
+
+	req, err := http.NewRequest("GET", u.String(), nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("apikey", c.apiKey)
+	return req, nil
+}
+
+func (c *Client) doRequest(req *http.Request, endpoint string) ([]byte, error) {
+	resp, err := c.httpClient.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = checkHTTPError(resp, endpoint)
+
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
