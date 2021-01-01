@@ -1,9 +1,11 @@
 package climacell
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -158,4 +160,143 @@ func TestClient_Nowcast(t *testing.T) {
 	}
 
 	assert.Equal(t, 3.63, *resp[0].Temperature.Value)
+}
+
+func TestClient_Nowcast_non200response(t *testing.T) {
+	mockError := HTTPError{
+		Endpoint: "/v3/weather/nowcast",
+		Message:  "mock error message",
+	}
+	mockData, err := json.Marshal(mockError)
+
+	if err != nil {
+		t.Fatal("error setting up mock body")
+	}
+
+	srv, closeFunc := setupTestServer(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(400)
+		w.Write(mockData)
+	})
+
+	defer closeFunc()
+
+	c, err := NewClient("apikey", srv.Client())
+
+	if err != nil {
+		t.Fatal("error setting up client")
+	}
+
+	latitude := 52.321234567890
+	longitude := 4.95124567890
+
+	resp, err := c.Nowcast(latitude, longitude, Si, 5, nil, nil, Temperature)
+
+	if err == nil {
+		t.Error("Nowcast() error = nil, expected non nil")
+		return
+	}
+
+	errMsg := err.Error()
+	wantMsg := "bad request /v3/weather/nowcast: mock error message"
+
+	if errMsg != wantMsg {
+		t.Errorf("Nowcast() error message = %q, want %q", errMsg, wantMsg)
+	}
+
+	assert.Nil(t, resp)
+}
+
+func TestClient_Nowcast_invalidArgs(t *testing.T) {
+	type fields struct {
+		httpClient *http.Client
+		baseURL    string
+		apiKey     string
+	}
+	type args struct {
+		latitude  float64
+		longitude float64
+		unit      unit
+		startTime *time.Time
+		endTime   *time.Time
+		fields    []field
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    NowcastResponse
+		wantLen int
+		wantErr bool
+	}{
+		{
+			name: "invalid latitude",
+			fields: fields{
+				httpClient: nil,
+				baseURL:    "",
+				apiKey:     "apikey",
+			},
+			args: args{
+				latitude:  -59.91,
+				longitude: 180,
+				unit:      Si,
+				fields:    nil,
+			},
+			wantLen: 0,
+			wantErr: true,
+		},
+		{
+			name: "invalid longitude",
+			fields: fields{
+				httpClient: nil,
+				baseURL:    "",
+				apiKey:     "apikey",
+			},
+			args: args{
+				latitude:  -59.9,
+				longitude: 180.01,
+				unit:      Si,
+				fields:    nil,
+			},
+			wantLen: 0,
+			wantErr: true,
+		},
+		{
+			name: "invalid base URL",
+			fields: fields{
+				httpClient: nil,
+				baseURL:    " http://localhost",
+				apiKey:     "apikey",
+			},
+			args: args{
+				latitude:  -59.9,
+				longitude: 180,
+				unit:      Si,
+				fields:    nil,
+			},
+			wantLen: 0,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				httpClient: tt.fields.httpClient,
+				baseURL:    tt.fields.baseURL,
+				apiKey:     tt.fields.apiKey,
+			}
+			got, err := c.Nowcast(
+				tt.args.latitude, tt.args.longitude,
+				tt.args.unit, 5, tt.args.startTime,
+				tt.args.endTime, tt.args.fields...,
+			)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Nowcast() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !reflect.DeepEqual(len(got), tt.wantLen) {
+				t.Errorf("Nowcast() got = %v, want %v", got, tt.wantLen)
+			}
+		})
+	}
 }
